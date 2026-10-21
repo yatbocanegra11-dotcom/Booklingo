@@ -55,7 +55,7 @@ class DataBaseHelper(context: Context) : SQLiteOpenHelper(
         val db = writableDatabase
 
         //craer variable para recibir los datos que escribe el usuario
-        val datos = ContentValues().apply{
+        val datos = ContentValues().apply {
             put(COL_NOMBRE, nombre)
             put(COL_CORREO, correo)
             put(COL_PASSWORD, password)
@@ -70,6 +70,32 @@ class DataBaseHelper(context: Context) : SQLiteOpenHelper(
         //comparar el valor del resultado de la insercion y agregarlo como boolean
         return resultado != -1L
 
-    }
 
-}
+
+
+        }
+    //metodo pra consultar a un usuario
+    fun IniciarSesion(correo : String, password: String) : Boolean {
+        val db = readableDatabase
+        val query_sql = """
+            SELECT * FROM $TABLE_USUARIOS
+        WHERE $COL_CORREO = ? AND $COL_PASSWORD = ? 
+        """.trimIndent()
+
+        //crear cursor pra recorrer informacion
+        val cursor = db.rawQuery(
+            query_sql, arrayOf(correo, password)
+        )
+
+        //crear variable de tipo bool que permita saber si el cursor encontro un registro
+        val usuarioEncontrado = cursor.count > 0
+
+        cursor.close()
+        db.close()
+
+        return usuarioEncontrado
+
+
+        }
+
+    }
