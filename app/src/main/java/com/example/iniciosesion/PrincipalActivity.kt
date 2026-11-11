@@ -1,5 +1,6 @@
 package com.example.iniciosesion
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -21,6 +22,7 @@ class PrincipalActivity : AppCompatActivity() {
     private lateinit var btnTraducir: Button
     private lateinit var tvResultado: TextView
     private lateinit var spIdiomas: Spinner
+    private lateinit var btnIrGuardar: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +33,20 @@ class PrincipalActivity : AppCompatActivity() {
         btnTraducir = findViewById(R.id.btnTraducir)
         tvResultado = findViewById(R.id.tvResultado)
         spIdiomas = findViewById(R.id.spIdiomas)
+        btnIrGuardar = findViewById(R.id.btnIrGuardar)
+
+        btnIrGuardar.setOnClickListener {
+            val intent = Intent(
+                this@PrincipalActivity,
+                GuardarTraduccionActivity::class.java
+            )
+
+            intent.putExtra("textoOriginal", etTexto.text.toString())
+            intent.putExtra("textoTraducido", tvResultado.text.toString())
+            intent.putExtra("idiomas", spIdiomas.selectedItem.toString())
+
+            startActivity(intent)
+        }
 
         // Opciones de idiomas disponibles
         val opcionesIdiomas = arrayOf(
