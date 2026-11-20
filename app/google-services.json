@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "670544828119",
+    "project_id": "booklingo-df57c",
+    "storage_bucket": "booklingo-df57c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:670544828119:android:bc83dc2fa5d2d911220292",
+        "android_client_info": {
+          "package_name": "com.example.iniciosesion"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "670544828119-h0ecrkg40abt3bvuemsh82g65ft1m0rl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBCijDefR47jziExwqaZG63Myek4BUW5o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "670544828119-h0ecrkg40abt3bvuemsh82g65ft1m0rl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

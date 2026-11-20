@@ -24,6 +24,9 @@ class PrincipalActivity : AppCompatActivity() {
     private lateinit var spIdiomas: Spinner
     private lateinit var btnIrGuardar: Button
 
+    // Variable para guardar la traduccion limpia sin etiquetas extra
+    private var traduccionLimpia: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -35,14 +38,28 @@ class PrincipalActivity : AppCompatActivity() {
         spIdiomas = findViewById(R.id.spIdiomas)
         btnIrGuardar = findViewById(R.id.btnIrGuardar)
 
+        // Evento para abrir la pantalla donde se guarda o elimina la traduccion
         btnIrGuardar.setOnClickListener {
+            val textoOriginal = etTexto.text.toString().trim()
+
+            // Validar que exista una traduccion antes de pasar a la siguiente pantalla
+            if (textoOriginal.isEmpty() || traduccionLimpia.isEmpty()) {
+                Toast.makeText(
+                    this@PrincipalActivity,
+                    "Primero traduce un texto",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
             val intent = Intent(
                 this@PrincipalActivity,
                 GuardarTraduccionActivity::class.java
             )
 
-            intent.putExtra("textoOriginal", etTexto.text.toString())
-            intent.putExtra("textoTraducido", tvResultado.text.toString())
+            // Enviar los datos relevantes del API a la pantalla de detalle
+            intent.putExtra("textoOriginal", textoOriginal)
+            intent.putExtra("textoTraducido", traduccionLimpia)
             intent.putExtra("idiomas", spIdiomas.selectedItem.toString())
 
             startActivity(intent)
@@ -55,7 +72,7 @@ class PrincipalActivity : AppCompatActivity() {
             "English → Français"
         )
 
-        // adaptar para mostrar las opciones en el Spinner
+        // Adaptador para mostrar las opciones en el Spinner
         val adaptador = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
@@ -80,7 +97,9 @@ class PrincipalActivity : AppCompatActivity() {
         if (texto.isEmpty()) {
             Toast.makeText(
                 this@PrincipalActivity,
-                "Escribe un texto para traducir",Toast.LENGTH_SHORT).show()
+                "Escribe un texto para traducir",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -93,6 +112,7 @@ class PrincipalActivity : AppCompatActivity() {
         }
 
         tvResultado.text = "Traduciendo..."
+        traduccionLimpia = ""
 
         RetrofitClient.api.traducirTexto(
             texto = texto,
@@ -109,6 +129,7 @@ class PrincipalActivity : AppCompatActivity() {
                         ?.responseData?.translatedText
 
                     if (!traduccion.isNullOrBlank()) {
+                        traduccionLimpia = traduccion
                         tvResultado.text = "Traduccion:\n$traduccion"
                     } else {
                         tvResultado.text = "No se encontro una traduccion."
