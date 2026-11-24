@@ -10,8 +10,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.credentials.ClearCredentialStateRequest
+import androidx.credentials.CredentialManager
+import androidx.lifecycle.lifecycleScope
 import com.example.iniciosesion.model.TraduccionResponse
 import com.example.iniciosesion.network.RetrofitClient
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,6 +30,11 @@ class PrincipalActivity : AppCompatActivity() {
     private lateinit var spIdiomas: Spinner
     private lateinit var btnIrGuardar: Button
 
+    // Componentes adaptados de HomeActivity para navegacion y cierre de sesion
+    private lateinit var bottomNavigation: BottomNavigationView
+    private lateinit var auth: FirebaseAuth
+    private lateinit var credentialManager: CredentialManager
+
     // Variable para guardar la traduccion limpia sin etiquetas extra
     private var traduccionLimpia: String = ""
 
@@ -32,11 +43,17 @@ class PrincipalActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_principal)
 
+        // Referencias a los componentes de la interfaz
         etTexto = findViewById(R.id.etTexto)
         btnTraducir = findViewById(R.id.btnTraducir)
         tvResultado = findViewById(R.id.tvResultado)
         spIdiomas = findViewById(R.id.spIdiomas)
         btnIrGuardar = findViewById(R.id.btnIrGuardar)
+        bottomNavigation = findViewById(R.id.bottomNavigation)
+
+        // Inicializar Firebase Auth y CredentialManager
+        auth = FirebaseAuth.getInstance()
+        credentialManager = CredentialManager.create(this)
 
         // Evento para abrir la pantalla donde se guarda o elimina la traduccion
         btnIrGuardar.setOnClickListener {
@@ -88,6 +105,9 @@ class PrincipalActivity : AppCompatActivity() {
         btnTraducir.setOnClickListener {
             traducirTexto()
         }
+
+        // Configurar el funcionamiento del menu inferior
+        menuNavegacion()
     }
 
     // Metodo para traducir el texto escrito por el usuario
@@ -153,5 +173,59 @@ class PrincipalActivity : AppCompatActivity() {
                 ).show()
             }
         })
+    }
+
+    // Metodo para el funcionamiento del menu inferior
+    private fun menuNavegacion() {
+        // Mostrar el elemento seleccionado
+        bottomNavigation.selectedItemId = R.id.nav_inicio
+
+        // Funcion de las opciones del menu
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_inicio -> {
+                    // true para indicar que el boton esta activo
+                    true
+                }
+
+                // Si agregas una Activity para ver favoritos en BookLingo, descomenta y ajusta:
+                // R.id.nav_favoritos -> {
+                //     val intent = Intent(this@PrincipalActivity, FavoritosActivity::class.java)
+                //     startActivity(intent)
+                //     true
+                // }
+
+                R.id.nav_salir -> {
+                    cerrarSesionGoogle()
+                    true
+                }
+
+                else -> false
+            }
+        }
+    }
+
+    // Metodo para cerrar sesion
+    private fun cerrarSesionGoogle() {
+        auth.signOut()
+        lifecycleScope.launch {
+            try {
+                // Limpiar las credenciales del usuario
+                credentialManager.clearCredentialState(
+                    ClearCredentialStateRequest()
+                )
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this@PrincipalActivity,
+                    "Error: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val intent = Intent(this@PrincipalActivity, MainActivity::class.java)
+            // Limpiar el historial de pantallas
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
     }
 }
