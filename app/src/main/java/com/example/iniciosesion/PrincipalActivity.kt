@@ -22,6 +22,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class PrincipalActivity : AppCompatActivity() {
 
     private lateinit var etTexto: EditText
@@ -188,12 +189,11 @@ class PrincipalActivity : AppCompatActivity() {
                     true
                 }
 
-                // Si agregas una Activity para ver favoritos en BookLingo, descomenta y ajusta:
-                // R.id.nav_favoritos -> {
-                //     val intent = Intent(this@PrincipalActivity, FavoritosActivity::class.java)
-                //     startActivity(intent)
-                //     true
-                // }
+                R.id.nav_favoritos -> {
+                    val intent = Intent(this@PrincipalActivity, FavoritosActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
 
                 R.id.nav_salir -> {
                     cerrarSesionGoogle()
@@ -228,4 +228,5 @@ class PrincipalActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
 }

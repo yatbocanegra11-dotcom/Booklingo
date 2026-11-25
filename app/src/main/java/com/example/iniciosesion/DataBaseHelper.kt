@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.iniciosesion.model.TraduccionFavorita
 
 class DataBaseHelper(context: Context) : SQLiteOpenHelper(
     context,
@@ -170,4 +171,41 @@ class DataBaseHelper(context: Context) : SQLiteOpenHelper(
 
         return existe
     }
+    // METODO PARA OBTENER TODAS LAS TRADUCCIONES FAVORITAS GUARDADAS
+    fun obtenerTraduccionesFavoritas(): MutableList<TraduccionFavorita> {
+        val listaFavoritos = mutableListOf<TraduccionFavorita>()
+        val db = readableDatabase
+
+        // Consultar todos los registros ordenados del mas reciente al mas antiguo
+        val cursor = db.rawQuery(
+            "SELECT $COL_FAVORITO_ID, $COL_TEXTO_ORIGINAL, $COL_TEXTO_TRADUCIDO, $COL_IDIOMAS FROM $TABLE_FAVORITOS ORDER BY $COL_FAVORITO_ID DESC",
+            null
+        )
+
+        // Recorrer cada fila encontrada con el cursor
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_FAVORITO_ID))
+                val textoOriginal = cursor.getString(cursor.getColumnIndexOrThrow(COL_TEXTO_ORIGINAL))
+                val textoTraducido = cursor.getString(cursor.getColumnIndexOrThrow(COL_TEXTO_TRADUCIDO))
+                val idiomas = cursor.getString(cursor.getColumnIndexOrThrow(COL_IDIOMAS))
+
+                listaFavoritos.add(
+                    TraduccionFavorita(
+                        id = id,
+                        textoOriginal = textoOriginal,
+                        textoTraducido = textoTraducido,
+                        idiomas = idiomas
+                    )
+                )
+            } while (cursor.moveToNext())
+        }
+
+        // Cerrar cursor y conexion de la base de datos
+        cursor.close()
+        db.close()
+
+        return listaFavoritos
+    }
+
 }

@@ -43,6 +43,9 @@
             android:name=".GuardarTraduccionActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".FavoritosActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
